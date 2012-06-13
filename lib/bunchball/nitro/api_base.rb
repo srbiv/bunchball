@@ -10,7 +10,7 @@ module Bunchball
       end
 
       def self.post(api_method, params = {})
-        p "In ApiBase.post('#{api_method}', #{params})"
+        # p "In ApiBase.post('#{api_method}', #{params})"
 
         # Don't overwrite a :sessionKey we got from the calling User object
         params = params.merge(self.session) unless params.has_key? :sessionKey
@@ -28,7 +28,7 @@ module Bunchball
         @@response
       end
 
-      def self.get(api_method, params = {})    
+      def self.get(api_method, params = {})
         # Don't overwrite a :sessionKey we got from the calling User object
         params = params.merge(self.session) unless params.has_key? :sessionKey
 
