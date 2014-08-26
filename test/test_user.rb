@@ -726,6 +726,17 @@ class TestUser < Test::Unit::TestCase
     assert_equal response, 'foo'
   end
 
+  def test_get_points_balance_instance_failure
+    u = setup_user
+
+    # Mock out the class method with the added params
+    Bunchball::Nitro.expects(:authenticate).with('wibble').returns('a_session_key')
+    Bunchball::Nitro::User.expects(:get_points_balance).with('wibble', :sessionKey => 'a_session_key').returns(nil).times(2)
+
+    response = u.get_points_balance
+    assert_equal response, nil
+  end
+
   def test_get_points_history
     params = {:userId => 'wiggly'}
 
@@ -1007,7 +1018,6 @@ class TestUser < Test::Unit::TestCase
 
     # Mock out the class method with the added params
     Bunchball::Nitro::User.expects(:modify_user_id).with(u.user_id, 'puggly', u.session).returns('foo')
-
     response = u.modify_user_id('puggly')
     assert_equal response, 'foo'
   end

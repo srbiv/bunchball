@@ -11,6 +11,15 @@ module Bunchball
         @session_key = Bunchball::Nitro.authenticate(user_id)
       end
 
+      def guarantee_auth &block
+        resp = block.call(self)
+        if resp.nil?
+          login
+          resp = block.call(self)
+        end
+        resp
+      end
+
       def session
         login unless @session_key
         {:sessionKey => @session_key}
@@ -22,7 +31,9 @@ module Bunchball
       end
 
       def accept_friend(friend_id, params = {})
-        response = User.accept_friend(@user_id, friend_id, session.merge(params))
+        guarantee_auth do
+          User.accept_friend(@user_id, friend_id, session.merge(params))
+        end
       end
 
       def self.award_challenge(user_id, challenge, params = {})
@@ -31,7 +42,9 @@ module Bunchball
       end
 
       def award_challenge(challenge, params = {})
-        User.award_challenge(@user_id, challenge, session.merge(params))
+        guarantee_auth do
+          User.award_challenge(@user_id, challenge, session.merge(params))
+        end
       end
 
       def self.broadcast(user_id, message, params = {})
@@ -45,7 +58,9 @@ module Bunchball
       end
 
       def broadcast(message, params = {})
-        User.broadcast(@user_id, message, session.merge(params))
+        guarantee_auth do
+          User.broadcast(@user_id, message, session.merge(params))
+        end
       end
 
       # Return values not documented in Wiki for this method, so here
@@ -93,7 +108,9 @@ module Bunchball
       end
 
       def create_avatar(catalog, instance, params = {})
-        User.create_avatar(@user_id, catalog, instance, session.merge(params))
+        guarantee_auth do
+          User.create_avatar(@user_id, catalog, instance, session.merge(params))
+        end
       end
 
       # Return values here are not documented in the Wiki, so here they are for now:
@@ -116,7 +133,9 @@ module Bunchball
       end
 
       def create_canvas(catalog, instance, params = {})
-        User.create_canvas(@user_id, catalog, instance, session.merge(params))
+        guarantee_auth do
+          User.create_canvas(@user_id, catalog, instance, session.merge(params))
+        end
       end
 
       def self.create_competition(user_ids, comp_name, params = {})
@@ -126,7 +145,9 @@ module Bunchball
 
       # Note sure how useful an instance version of this one will be, but still...
       def create_competition(comp_name, params = {})
-        User.create_competition(@user_id, comp_name, session.merge(params))
+        guarantee_auth do
+          User.create_competition(@user_id, comp_name, session.merge(params))
+        end
       end
 
       def self.credit_points(user_id, points, params = {})
@@ -135,7 +156,9 @@ module Bunchball
       end
 
       def credit_points(points, params = {})
-        response = User.credit_points(@user_id, points, session.merge(params))
+        guarantee_auth do
+          User.credit_points(@user_id, points, session.merge(params))
+        end
       end
 
       def self.debit_points(user_id, points, params = {})
@@ -144,7 +167,9 @@ module Bunchball
       end
 
       def debit_points(points, params = {})
-        response = User.debit_points(@user_id, points, session.merge(params))
+        guarantee_auth do
+          User.debit_points(@user_id, points, session.merge(params))
+        end
       end
 
       def self.delete_comment(sender, recipient, comment_id, params = {})
@@ -153,7 +178,9 @@ module Bunchball
       end
 
       def delete_comment(recipient, comment_id, params = {})
-        User.delete_comment(@user_id, recipient, comment_id, session.merge(params))
+        guarantee_auth do
+          User.delete_comment(@user_id, recipient, comment_id, session.merge(params))
+        end
       end
 
       def self.exists(user_id, params = {})
@@ -165,7 +192,9 @@ module Bunchball
       end
 
       def exists(user_id, params = {})
-        User.exists(user_id, session.merge(params))
+        guarantee_auth do
+          User.exists(user_id, session.merge(params))
+        end
       end
 
       def self.get_action_history(user_id, params = {})
@@ -183,7 +212,9 @@ module Bunchball
 
       # For instance method, just add @user_id and pass it up to the class method.
       def get_action_history(params = {})
-        User.get_action_history(@user_id, session.merge(params))
+        guarantee_auth do
+          User.get_action_history(@user_id, session.merge(params))
+        end
       end
 
       def self.get_action_target_value(user_id, tag, target, params = {})
@@ -194,7 +225,9 @@ module Bunchball
 
       # For instance method, just add @user_id and pass it up to the class method.
       def get_action_target_value(tag, target, params = {})
-        User.get_action_target_value(@user_id, tag, target, session.merge(params))
+        guarantee_auth do
+          User.get_action_target_value(@user_id, tag, target, session.merge(params))
+        end
       end
 
       def self.get_avatar_items(user_id, instance_name, params = {})
@@ -203,7 +236,9 @@ module Bunchball
       end
 
       def get_avatar_items(instance_name, params = {})
-        User.get_avatar_items(@user_id, instance_name, session.merge(params))
+        guarantee_auth do
+          User.get_avatar_items(@user_id, instance_name, session.merge(params))
+        end
       end
 
       def self.get_avatars(user_id, params = {})
@@ -215,7 +250,9 @@ module Bunchball
       end
 
       def get_avatars(params = {})
-        User.get_avatars(@user_id, session.merge(params))
+        guarantee_auth do
+          User.get_avatars(@user_id, session.merge(params))
+        end
       end
 
       def self.get_canvas_items(user_id, instance_name, params = {})
@@ -224,7 +261,9 @@ module Bunchball
       end
 
       def get_canvas_items(instance_name, params = {})
-        User.get_canvas_items(@user_id, instance_name, session.merge(params))
+        guarantee_auth do
+          User.get_canvas_items(@user_id, instance_name, session.merge(params))
+        end
       end
 
       def self.get_canvases(user_id, params = {})
@@ -236,7 +275,9 @@ module Bunchball
       end
 
       def get_canvases(params = {})
-        User.get_canvases(@user_id, session.merge(params))
+        guarantee_auth do
+          User.get_canvases(@user_id, session.merge(params))
+        end
       end
 
       def self.get_challenge_progress(user_id, params = {})
@@ -251,7 +292,9 @@ module Bunchball
       end
 
       def get_challenge_progress(params = {})
-        User.get_challenge_progress(@user_id, session.merge(params))
+        guarantee_auth do
+          User.get_challenge_progress(@user_id, session.merge(params))
+        end
       end
 
       def self.get_comments(user_id, params = {})
@@ -260,7 +303,9 @@ module Bunchball
       end
 
       def get_comments(params = {})
-        User.get_comments(@user_id, session.merge(params))
+        guarantee_auth do
+          User.get_comments(@user_id, session.merge(params))
+        end
       end
 
       def self.get_competition_progress(user_id, params = {})
@@ -269,7 +314,9 @@ module Bunchball
       end
 
       def get_competition_progress(params = {})
-        User.get_competition_progress(@user_id, session.merge(params))
+        guarantee_auth do
+          User.get_competition_progress(@user_id, session.merge(params))
+        end
       end
 
       def self.get_custom_url(user_id, tag, landing_url, params = {})
@@ -278,7 +325,9 @@ module Bunchball
       end
 
       def get_custom_url(tag, landing_url, params = {})
-        User.get_custom_url(@user_id, tag, landing_url, session.merge(params))
+        guarantee_auth do
+          User.get_custom_url(@user_id, tag, landing_url, session.merge(params))
+        end
       end
 
       def self.get_friends(user_id, friend_type, params = {})
@@ -291,7 +340,9 @@ module Bunchball
       end
 
       def get_friends(friend_type, params = {})
-        response = User.get_friends(@user_id, friend_type, session.merge(params))
+        guarantee_auth do
+          User.get_friends(@user_id, friend_type, session.merge(params))
+        end
       end
 
       # This API call does not return what the wiki says it does as of this writing:
@@ -305,7 +356,9 @@ module Bunchball
       end
 
       def get_gifts(params = {})
-        User.get_gifts(@user_id, session.merge(params))
+        guarantee_auth do
+          User.get_gifts(@user_id, session.merge(params))
+        end
       end
 
       def self.get_groups(user_id, params = {})
@@ -314,7 +367,9 @@ module Bunchball
       end
 
       def get_groups(params = {})
-        User.get_groups(@user_id, session.merge(params))
+        guarantee_auth do
+          User.get_groups(@user_id, session.merge(params))
+        end
       end
 
       def self.get_level(user_ids, params = {})
@@ -330,9 +385,11 @@ module Bunchball
       end
 
       def get_level(params = {})
-        response = User.get_level(@user_id, session.merge(params))
-        response.payload = response.payload.first['level']
-        response
+        guarantee_auth do
+          response = User.get_level(@user_id, session.merge(params))
+          response.payload = response.payload.first['level']
+          response
+        end
       end
 
       def self.get_next_level(user_id, params = {})
@@ -343,7 +400,9 @@ module Bunchball
       end
 
       def get_next_level(params = {})
-        response = User.get_next_level(@user_id, session.merge(params))
+        guarantee_auth do
+          User.get_next_level(@user_id, session.merge(params))
+        end
       end
 
       def self.get_next_challenge(user_id, params = {})
@@ -356,7 +415,9 @@ module Bunchball
       end
 
       def get_next_challenge(params = {})
-        User.get_next_challenge(@user_id, session.merge(params))
+        guarantee_auth do
+          User.get_next_challenge(@user_id, session.merge(params))
+        end
       end
 
       def self.get_owned_items(user_id, params = {})
@@ -365,7 +426,9 @@ module Bunchball
       end
 
       def get_owned_items(params = {})
-        response = User.get_owned_items(@user_id, session.merge(params))
+        guarantee_auth do
+          User.get_owned_items(@user_id, session.merge(params))
+        end
       end
 
       def self.get_pending_notifications(user_id, params = {})
@@ -392,7 +455,9 @@ module Bunchball
       end
 
       def get_pending_notifications(params = {})
-        response = User.get_pending_notifications(@user_id, session.merge(params))
+        guarantee_auth do
+          User.get_pending_notifications(@user_id, session.merge(params))
+        end
       end
 
       def self.get_points_balance(user_id, params = {})
@@ -403,7 +468,9 @@ module Bunchball
       end
 
       def get_points_balance(params = {})
-        response = User.get_points_balance(@user_id, session.merge(params))
+        guarantee_auth do
+          User.get_points_balance(@user_id, session.merge(params))
+        end
       end
 
       def self.get_points_history(user_id, params = {})
@@ -412,7 +479,9 @@ module Bunchball
       end
 
       def get_points_history(params = {})
-        response = User.get_points_history(@user_id, session.merge(params))
+        guarantee_auth do
+          User.get_points_history(@user_id, session.merge(params))
+        end
       end
 
       def self.get_preference(user_id, name, params = {})
@@ -421,7 +490,9 @@ module Bunchball
       end
 
       def get_preference(name, params = {})
-        response = User.get_preference(@user_id, name, session.merge(params))
+        guarantee_auth do
+          User.get_preference(@user_id, name, session.merge(params))
+        end
       end
 
       def self.get_preferences(user_id, names, params = {})
@@ -430,7 +501,9 @@ module Bunchball
       end
 
       def get_preferences(names, params = {})
-        response = User.get_preferences(@user_id, names, session.merge(params))
+        guarantee_auth do
+          User.get_preferences(@user_id, names, session.merge(params))
+        end
       end
 
       def self.get_responses(user_id, params = {})
@@ -439,7 +512,9 @@ module Bunchball
       end
 
       def get_responses(params = {})
-        User.get_responses(@user_id, session.merge(params))
+        guarantee_auth do
+          User.get_responses(@user_id, session.merge(params))
+        end
       end
 
       def self.get_social_status(user_id, params = {})
@@ -448,7 +523,9 @@ module Bunchball
       end
 
       def get_social_status(params = {})
-        User.get_social_status(@user_id, session.merge(params))
+        guarantee_auth do
+          User.get_social_status(@user_id, session.merge(params))
+        end
       end
 
       def self.gift_item(user_id, recipient_id, item_id, params = {})
@@ -457,7 +534,9 @@ module Bunchball
       end
 
       def gift_item(recipient_id, item_id, params = {})
-        response = User.gift_item(@user_id, recipient_id, item_id, session.merge(params))
+        guarantee_auth do
+          User.gift_item(@user_id, recipient_id, item_id, session.merge(params))
+        end
       end
 
       def self.invite_friend(user_id, friend_id, params = {})
@@ -466,7 +545,9 @@ module Bunchball
       end
 
       def invite_friend(friend_id, params = {})
-        response = User.invite_friend(@user_id, friend_id, session.merge(params))
+        guarantee_auth do
+          User.invite_friend(@user_id, friend_id, session.merge(params))
+        end
       end
 
       # Wiki docs don't say on this method either that userId is required,
@@ -479,7 +560,9 @@ module Bunchball
       end
 
       def join_group(group_name, params = {})
-        User.join_group(@user_id, group_name, session.merge(params))
+        guarantee_auth do
+          User.join_group(@user_id, group_name, session.merge(params))
+        end
       end
 
       def self.leave_all_groups(user_id, params = {})
@@ -488,7 +571,9 @@ module Bunchball
       end
 
       def leave_all_groups(params = {})
-        User.leave_all_groups(@user_id, session.merge(params))
+        guarantee_auth do
+          User.leave_all_groups(@user_id, session.merge(params))
+        end
       end
 
       def self.leave_group(user_id, group_name, params = {})
@@ -497,7 +582,9 @@ module Bunchball
       end
 
       def leave_group(group_name, params = {})
-        User.leave_group(@user_id, group_name, session.merge(params))
+        guarantee_auth do
+          User.leave_group(@user_id, group_name, session.merge(params))
+        end
       end
 
       def self.log_action(user_id, tags, params = {})
@@ -508,7 +595,9 @@ module Bunchball
       end
 
       def log_action(tags, params = {})
-        User.log_action(@user_id, tags, session.merge(params))
+        guarantee_auth do
+          User.log_action(@user_id, tags, session.merge(params))
+        end
       end
 
       # From the Wiki: "This method is identical to user.logAction in all ways
@@ -525,7 +614,9 @@ module Bunchball
       end
 
       def modify_user_id(new_user_id, params = {})
-        User.modify_user_id(@user_id, new_user_id, session.merge(params))
+        guarantee_auth do
+          User.modify_user_id(@user_id, new_user_id, session.merge(params))
+        end
       end
 
       # Wiki for [place|remove]AvatarItem is ambiguous about whether instanceName is
@@ -544,7 +635,9 @@ module Bunchball
       end
 
       def place_avatar_item(item_id, params = {})
-        User.place_avatar_item(@user_id, item_id, session.merge(params))
+        guarantee_auth do
+          User.place_avatar_item(@user_id, item_id, session.merge(params))
+        end
       end
 
       def self.place_canvas_item(user_id, instance, x, y, z_order, params = {})
@@ -554,7 +647,9 @@ module Bunchball
 
       # TODO : Need to test this against a real canvas and make sure that the return values are correct
       def place_canvas_item(instance, x, y, z_order, params = {})
-        User.place_canvas_item(@user_id, instance, x, y, z_order, session.merge(params))
+        guarantee_auth do
+          User.place_canvas_item(@user_id, instance, x, y, z_order, session.merge(params))
+        end
       end
 
       def self.purchase_item(user_id, item_id, params = {})
@@ -563,7 +658,9 @@ module Bunchball
       end
 
       def purchase_item(item_id, params = {})
-        response = User.purchase_item(@user_id, item_id, session.merge(params))
+        guarantee_auth do
+          User.purchase_item(@user_id, item_id, session.merge(params))
+        end
       end
 
       def self.remove_avatar_item(user_id, item_id, params = {})
@@ -572,7 +669,9 @@ module Bunchball
       end
 
       def remove_avatar_item(item_id, params = {})
-        User.remove_avatar_item(@user_id, item_id, session.merge(params))
+        guarantee_auth do
+          User.remove_avatar_item(@user_id, item_id, session.merge(params))
+        end
       end
 
       def self.remove_canvas_item(user_id, item_id, instance, params = {})
@@ -581,7 +680,9 @@ module Bunchball
       end
 
       def remove_canvas_item(item_id, instance, params = {})
-        User.remove_canvas_item(@user_id, item_id, instance, session.merge(params))
+        guarantee_auth do
+          User.remove_canvas_item(@user_id, item_id, instance, session.merge(params))
+        end
       end
 
       # Wiki is incorrect about the return value of this API call as well. When
@@ -597,7 +698,9 @@ module Bunchball
       end
 
       def remove_friend(friend_id, params = {})
-        response = User.remove_friend(@user_id, friend_id, session.merge(params))
+        guarantee_auth do
+          User.remove_friend(@user_id, friend_id, session.merge(params))
+        end
       end
 
       def self.remove_preference(user_id, name, params = {})
@@ -606,7 +709,9 @@ module Bunchball
       end
 
       def remove_preference(name, params = {})
-        response = User.remove_preference(@user_id, name, session.merge(params))
+        guarantee_auth do
+          User.remove_preference(@user_id, name, session.merge(params))
+        end
       end
 
       def self.reset_level(user_id, params = {})
@@ -615,7 +720,9 @@ module Bunchball
       end
 
       def reset_level(params = {})
-        response = User.reset_level(@user_id, session.merge(params))
+        guarantee_auth do
+          User.reset_level(@user_id, session.merge(params))
+        end
       end
 
       def self.save_comment(user_id, recipient_id, value, params = {})
@@ -624,7 +731,9 @@ module Bunchball
       end
 
       def save_comment(recipient_id, value, params = {})
-        User.save_comment(@user_id, recipient_id, value, session.merge(params))
+        guarantee_auth do
+          User.save_comment(@user_id, recipient_id, value, session.merge(params))
+        end
       end
 
       # This one requires either itemId or ownedItemId (but not both, presumably)
@@ -636,7 +745,9 @@ module Bunchball
       end
 
       def sellback_item(params = {})
-        response = User.sellback_item(@user_id, session.merge(params))
+        guarantee_auth do
+          User.sellback_item(@user_id, session.merge(params))
+        end
       end
 
       def self.set_avatar_color(user_id, instance, color, params = {})
@@ -645,7 +756,9 @@ module Bunchball
       end
 
       def set_avatar_color(instance, color, params = {})
-        User.set_avatar_color(@user_id, instance, color, session.merge(params))
+        guarantee_auth do
+          User.set_avatar_color(@user_id, instance, color, session.merge(params))
+        end
       end
 
       def self.set_level(user_id, level_name, params = {})
@@ -654,7 +767,9 @@ module Bunchball
       end
 
       def set_level(level_name, params = {})
-        response = User.set_level(@user_id, level_name, session.merge(params))
+        guarantee_auth do
+          User.set_level(@user_id, level_name, session.merge(params))
+        end
       end
 
       def self.set_preference(user_id, name, params = {})
@@ -663,7 +778,9 @@ module Bunchball
       end
 
       def set_preference(name, params = {})
-        response = User.set_preference(@user_id, name, session.merge(params))
+        guarantee_auth do
+          User.set_preference(@user_id, name, session.merge(params))
+        end
       end
 
       def self.set_preferences(user_id, names, params = {})
@@ -672,7 +789,9 @@ module Bunchball
       end
 
       def set_preferences(names, params = {})
-        response = User.set_preferences(@user_id, names, session.merge(params))
+        guarantee_auth do
+          User.set_preferences(@user_id, names, session.merge(params))
+        end
       end
 
       # This very strangely-named method doesn't actually set a social 'status' (in the way
@@ -690,7 +809,9 @@ module Bunchball
       end
 
       def set_social_status(facebook_id, params = {})
-        User.set_social_status(@user_id, facebook_id, session.merge(params))
+        guarantee_auth do
+          User.set_social_status(@user_id, facebook_id, session.merge(params))
+        end
       end
 
       def self.social_link_perform_connector_action(user_id, action, account, params = {})
@@ -699,7 +820,9 @@ module Bunchball
       end
 
       def social_link_perform_connector_action(action, account, params = {})
-        User.social_link_perform_connector_action(@user_id, action, account, session.merge(params))
+        guarantee_auth do
+          User.social_link_perform_connector_action(@user_id, action, account, session.merge(params))
+        end
       end
 
       def self.store_notifications(user_ids, notification_names, params = {})
@@ -708,7 +831,9 @@ module Bunchball
       end
 
       def store_notifications(notification_names, params = {})
-        response = User.store_notifications(@user_id, notification_names, session.merge(params))
+        guarantee_auth do
+          User.store_notifications(@user_id, notification_names, session.merge(params))
+        end
       end
 
       def self.transfer_points(src_user_id, dest_user_id, params = {})
@@ -718,7 +843,9 @@ module Bunchball
       end
 
       def transfer_points(dest_user_id, params = {})
-        User.transfer_points(@user_id, dest_user_id, session.merge(params))
+        guarantee_auth do
+          User.transfer_points(@user_id, dest_user_id, session.merge(params))
+        end
       end
       # This really should be the name of the instance method version of this
       alias transfer_points_to_user transfer_points
